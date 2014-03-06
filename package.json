@@ -1,0 +1,14 @@
+{
+  "name": "os-cli",
+  "version": "0.0.1",
+  "bin": {
+    "os": "bin/os",
+  },
+  "description": "Show OS Information in Command Line",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

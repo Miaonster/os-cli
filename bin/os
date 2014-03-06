@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+
+'use strict';
+
+process.title = "os-cli";
+
+var os = require('os');
+
+for (var func in os) {
+  if (typeof os[func] === 'function') {
+    console.log(os[func]());
+  } else {
+    console.log(func);
+  }
+}
+
+console.log(os.release());
