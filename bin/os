@@ -4,14 +4,97 @@
 
 process.title = "os-cli";
 
-var os = require('os');
+var os = require('os'),
+    colors = require('colors'),
+    Table = require('cli-table');
 
-for (var func in os) {
-  if (typeof os[func] === 'function') {
-    console.log(os[func]());
-  } else {
-    console.log(func);
-  }
+var platform,
+    linux,
+    windows,
+    mac;
+
+function separate(separator, input) {
+    if (!Array.isArray(separator)) {
+        separator = [separator];
+    }
+
+    var result = [input];
+
+
+    separator.forEach(function(element, i) {
+        var temp = [];
+
+        result.forEach(function(str, j) {
+            temp = temp.concat(str.split(element));
+        });
+
+        result = temp.filter(function(element) {
+            if (element === '' || element === null || typeof element === 'undefined') {
+                return false;
+            }
+
+            return true;
+        });
+    });
+
+    return result;
 }
 
-console.log(os.release());
+linux = {
+    info: {},
+
+    collect: function() {
+        var sys = require('sys'),
+            exec = require('child_process').exec;
+
+        var child,
+            that = this,
+            command = 'cat /etc/*-release';
+
+        this.info.kernel = 'Linux';
+        this.info.kernelVersion = os.release();
+        this.info.hostname = os.hostname();
+
+        child = exec(command, function(error, stdout, stderr) {
+            if (error) {
+                //return sys.print('Cannot identify this device.');
+            }
+
+            var result = separate(['=', '\n', '"'], stdout),
+                k,
+                v;
+
+            for (var i = 0; i < result.length; i += 2) {
+                k = result[i];
+                v = result[i + 1];
+
+                if (k === 'DISTRIB_ID') {
+                    that.info.name = v;
+                } else if (k === 'DISTRIB_RELEASE') {
+                    that.info.version = v;
+                } else if (k === 'DISTRIB_CODENAME') {
+                    that.info.codename = v;
+                } else if (k === 'DISTRIB_DESCRIPTION') {
+                    that.info.description = v;
+                }
+            }
+
+            that.show();
+        });
+    },
+
+    show: function() {
+        var info = this.info;
+        console.log(
+            info.name.magenta.bold,
+            info.version.magenta.bold,
+            '(' + info.kernel, info.kernelVersion + ')'
+        );
+    }
+};
+
+platform = os.platform();
+
+if (platform === 'linux') {
+    linux.collect();
+}

@@ -2,7 +2,7 @@
   "name": "os-cli",
   "version": "0.0.1",
   "bin": {
-    "os": "bin/os",
+    "os": "bin/os"
   },
   "description": "Show OS Information in Command Line",
   "main": "index.js",
@@ -10,5 +10,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "awk": "0.0.1",
+    "colors": "~0.6.2",
+    "cli-table": "~0.3.0"
+  }
 }
