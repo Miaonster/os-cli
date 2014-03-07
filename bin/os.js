@@ -60,7 +60,7 @@ linux = {
         def = this.collectName();
 
         Deferred.when(def)
-            .then(function() { show(); });
+            .then(function() { show(that.info); });
     },
 
     run: function(command, callback) {

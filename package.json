@@ -1,6 +1,6 @@
 {
   "name": "os-cli",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "bin": {
     "os": "bin/os.js"
   },
