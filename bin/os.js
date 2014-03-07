@@ -6,7 +6,8 @@ process.title = "os-cli";
 
 var os = require('os'),
     colors = require('colors'),
-    Table = require('cli-table');
+    Table = require('cli-table'),
+    Deferred = require('JQDeferred');
 
 var platform,
     linux,
@@ -48,6 +49,7 @@ linux = {
             exec = require('child_process').exec;
 
         var child,
+            def,
             that = this,
             command = 'cat /etc/*-release';
 
@@ -55,32 +57,59 @@ linux = {
         this.info.kernelVersion = os.release();
         this.info.hostname = os.hostname();
 
+        def = this.collectName();
+
+        Deferred.when(def)
+            .then(function() {
+                that.show();
+            });
+    },
+
+    run: function(command, callback) {
+        var child,
+            that = this;
+
+        var sys = require('sys'),
+            exec = require('child_process').exec;
+
         child = exec(command, function(error, stdout, stderr) {
             if (error) {
                 //return sys.print('Cannot identify this device.');
             }
 
-            var result = separate(['=', '\n', '"'], stdout),
+            callback(stdout);
+        });
+    },
+
+    collectName: function() {
+        var command = 'lsb_release -a',
+            def = Deferred(),
+            that = this;
+
+        this.run(command, function(text) {
+            var result = separate([':', '\n'], text),
                 k,
                 v;
 
             for (var i = 0; i < result.length; i += 2) {
-                k = result[i];
-                v = result[i + 1];
+                k = result[i].trim();
+                v = result[i + 1].trim();
 
-                if (k === 'DISTRIB_ID') {
+                if (k === 'Distributor ID') {
                     that.info.name = v;
-                } else if (k === 'DISTRIB_RELEASE') {
+                } else if (k === 'Release') {
                     that.info.version = v;
-                } else if (k === 'DISTRIB_CODENAME') {
+                } else if (k === 'Codename') {
                     that.info.codename = v;
-                } else if (k === 'DISTRIB_DESCRIPTION') {
+                } else if (k === 'Description') {
                     that.info.description = v;
                 }
             }
 
-            that.show();
+            def.resolve();
         });
+
+        return def.promise();
     },
 
     show: function() {
