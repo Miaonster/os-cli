@@ -9,12 +9,34 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Witcher42",
+  "license": "MIT",
   "devDependencies": {
     "awk": "0.0.1",
     "colors": "~0.6.2",
     "cli-table": "~0.3.0",
     "JQDeferred": "~2.1.0"
-  }
+  },
+  "dependencies": {
+    "JQDeferred": "~2.1.0",
+    "awk": "~0.0.1",
+    "cli-table": "~0.3.0",
+    "colors": "~0.6.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Witcher42/os-cli.git"
+  },
+  "keywords": [
+    "os",
+    "command line",
+    "os version",
+    "linux version",
+    "mac version",
+    "windows version"
+  ],
+  "bugs": {
+    "url": "https://github.com/Witcher42/os-cli/issues"
+  },
+  "homepage": "https://github.com/Witcher42/os-cli"
 }

@@ -60,9 +60,7 @@ linux = {
         def = this.collectName();
 
         Deferred.when(def)
-            .then(function() {
-                that.show();
-            });
+            .then(function() { show(); });
     },
 
     run: function(command, callback) {
@@ -110,20 +108,89 @@ linux = {
         });
 
         return def.promise();
-    },
-
-    show: function() {
-        var info = this.info;
-        console.log(
-            info.name.magenta.bold,
-            info.version.magenta.bold,
-            '(' + info.kernel, info.kernelVersion + ')'
-        );
     }
 };
+
+mac = {
+    info: {},
+
+    collect: function() {
+        var sys = require('sys'),
+            exec = require('child_process').exec;
+
+        var child,
+            def,
+            that = this,
+            command = 'cat /etc/*-release';
+
+        this.info.kernel = os.type();
+        this.info.kernelVersion = os.release();
+        this.info.hostname = os.hostname();
+
+        def = this.collectName();
+
+        Deferred.when(def)
+            .then(function() { show(that.info); });
+    },
+
+    run: function(command, callback) {
+        var child,
+            that = this;
+
+        var sys = require('sys'),
+            exec = require('child_process').exec;
+
+        child = exec(command, function(error, stdout, stderr) {
+            if (error) {
+                //return sys.print('Cannot identify this device.');
+            }
+
+            callback(stdout);
+        });
+    },
+
+    collectName: function() {
+        var command = 'sw_vers',
+            def = Deferred(),
+            that = this;
+
+        this.run(command, function(text) {
+            var result = separate([':', '\n'], text),
+                k,
+                v;
+
+            for (var i = 0; i < result.length; i += 2) {
+                k = result[i].trim();
+                v = result[i + 1].trim();
+
+                if (k === 'ProductName') {
+                    that.info.name = v;
+                } else if (k === 'ProductVersion') {
+                    that.info.version = v;
+                }
+            }
+
+            def.resolve();
+        });
+
+        return def.promise();
+    }
+};
+
+function show(info) {
+    console.log(
+        info.name.magenta.bold,
+        info.version.magenta.bold,
+        '(' + info.kernel, info.kernelVersion + ')'
+    );
+}
 
 platform = os.platform();
 
 if (platform === 'linux') {
     linux.collect();
+} else if (platform === 'darwin') {
+    mac.collect();
+} else {
+    console.log('Not Implemented'.red);
 }
