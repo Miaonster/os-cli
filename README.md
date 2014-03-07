@@ -7,7 +7,7 @@ Tired of rememberring kinds of commands of showing name and version of different
 
 ### Installation
 
-    npm install -g os-cli
+    [sudo] npm install -g os-cli
     
 ### Usage
 
