@@ -1,8 +1,8 @@
 {
   "name": "os-cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "bin": {
-    "os": "bin/os"
+    "os": "bin/os.js"
   },
   "description": "Show OS Information in Command Line",
   "main": "index.js",
