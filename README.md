@@ -27,3 +27,6 @@ or
 
     Ubuntu 12.04 (Linux 3.2.0-23-generic)
     
+or
+
+    Microsoft Windows 7 Ultimate Service Pack 1 (Windows_NT 6.1.7601)

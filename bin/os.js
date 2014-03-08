@@ -222,8 +222,6 @@ win = {
                 k,
                 v;
 
-            console.log(result);
-
             for (var i = 0; i < result.length; i += 2) {
                 k = result[i].trim();
                 v = result[i + 1].trim();
@@ -260,5 +258,5 @@ if (platform === 'linux') {
 } else if (platform.indexOf('win') === 0) {
     win.collect();
 } else {
-    console.log(platform, 'Not Implemented'.red);
+    console.log('Not implemented for'.red, platform.magenta);
 }
