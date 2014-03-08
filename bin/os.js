@@ -11,7 +11,7 @@ var os = require('os'),
 
 var platform,
     linux,
-    windows,
+    win,
     mac;
 
 function separate(separator, input) {
@@ -50,8 +50,7 @@ linux = {
 
         var child,
             def,
-            that = this,
-            command = 'cat /etc/*-release';
+            that = this;
 
         this.info.kernel = 'Linux';
         this.info.kernelVersion = os.release();
@@ -120,8 +119,7 @@ mac = {
 
         var child,
             def,
-            that = this,
-            command = 'cat /etc/*-release';
+            that = this;
 
         this.info.kernel = os.type();
         this.info.kernelVersion = os.release();
@@ -177,6 +175,74 @@ mac = {
     }
 };
 
+win = {
+    info: {},
+
+    collect: function () {
+        var sys = require('sys'),
+            exec = require('child_process').exec;
+
+        var child,
+            def,
+            that = this;
+
+        this.info.kernel = os.type();
+        this.info.kernelVersion = os.release();
+        this.info.hostname = os.hostname();
+
+        def = this.collectName();
+
+        Deferred.when(def)
+            .then(function() { show(that.info); });
+    },
+
+    run: function(command, callback) {
+        var child,
+            that = this;
+
+        var sys = require('sys'),
+            exec = require('child_process').exec;
+
+        child = exec(command, function(error, stdout, stderr) {
+            if (error) {
+                //return sys.print('Cannot identify this device.');
+            }
+
+            callback(stdout);
+        });
+    },
+
+    collectName: function() {
+        var command = 'wmic os get Caption,CSDVersion /value',
+            def = Deferred(),
+            that = this;
+
+        this.run(command, function(text) {
+            var result = separate(['=', '\n', '\r'], text),
+                k,
+                v;
+
+            console.log(result);
+
+            for (var i = 0; i < result.length; i += 2) {
+                k = result[i].trim();
+                v = result[i + 1].trim();
+
+                if (k === 'Caption') {
+                    that.info.name = v;
+                } else if (k === 'CSDVersion') {
+                    that.info.version = v;
+                }
+            }
+
+            def.resolve();
+        });
+
+        return def.promise();
+    }
+
+};
+
 function show(info) {
     console.log(
         info.name.magenta.bold,
@@ -191,6 +257,8 @@ if (platform === 'linux') {
     linux.collect();
 } else if (platform === 'darwin') {
     mac.collect();
+} else if (platform.indexOf('win') === 0) {
+    win.collect();
 } else {
-    console.log('Not Implemented'.red);
+    console.log(platform, 'Not Implemented'.red);
 }
