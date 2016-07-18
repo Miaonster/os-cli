@@ -1,26 +1,18 @@
 {
   "name": "os-cli",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "bin": {
     "os": "bin/os.js"
   },
-  "description": "Show OS Information in Command Line",
+  "description": "Show OS Information",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Witcher42",
   "license": "MIT",
-  "devDependencies": {
-    "awk": "0.0.1",
-    "colors": "~0.6.2",
-    "cli-table": "~0.3.0",
-    "JQDeferred": "~2.1.0"
-  },
   "dependencies": {
     "JQDeferred": "~2.1.0",
-    "awk": "~0.0.1",
-    "cli-table": "~0.3.0",
     "colors": "~0.6.2"
   },
   "repository": {

@@ -1,9 +1,6 @@
-'use strict';
-
 var os = require('os'),
     colors = require('colors'),
-    Table = require('cli-table'),
-    Deferred = require('JQDeferred');
+    deferred = require('JQDeferred');
 
 var platform,
     linux,
@@ -16,7 +13,6 @@ function separate(separator, input) {
     }
 
     var result = [input];
-
 
     separator.forEach(function(element, i) {
         var temp = [];
@@ -41,7 +37,7 @@ linux = {
     info: {},
 
     collect: function(callback) {
-        
+
         var exec = require('child_process').exec;
 
         var child,
@@ -54,7 +50,7 @@ linux = {
 
         def = this.collectName();
 
-        Deferred.when(def)
+        deferred.when(def)
             .then(function() { callback(null, that.info); });
     },
 
@@ -62,12 +58,12 @@ linux = {
         var child,
             that = this;
 
-        
+
         var exec = require('child_process').exec;
 
         child = exec(command, function(error, stdout, stderr) {
             if (error) {
-                //return sys.print('Cannot identify this device.');
+                return console.log('Cannot identify this device.');
             }
 
             callback(stdout);
@@ -76,7 +72,7 @@ linux = {
 
     collectName: function() {
         var command = 'lsb_release -a',
-            def = Deferred(),
+            def = deferred(),
             that = this;
 
         this.run(command, function(text) {
@@ -110,7 +106,7 @@ mac = {
     info: {},
 
     collect: function(callback) {
-        
+
         var exec = require('child_process').exec;
 
         var child,
@@ -123,7 +119,7 @@ mac = {
 
         def = this.collectName();
 
-        Deferred.when(def)
+        deferred.when(def)
             .then(function() { callback(null, that.info); });
     },
 
@@ -131,12 +127,12 @@ mac = {
         var child,
             that = this;
 
-        
+
         var exec = require('child_process').exec;
 
         child = exec(command, function(error, stdout, stderr) {
             if (error) {
-                //return sys.print('Cannot identify this device.');
+                return console.log('Cannot identify this device.');
             }
 
             callback(stdout);
@@ -145,7 +141,7 @@ mac = {
 
     collectName: function() {
         var command = 'sw_vers',
-            def = Deferred(),
+            def = deferred(),
             that = this;
 
         this.run(command, function(text) {
@@ -174,8 +170,8 @@ mac = {
 win = {
     info: {},
 
-    collect: function (callback) {
-        
+    collect: function(callback) {
+
         var exec = require('child_process').exec;
 
         var child,
@@ -188,7 +184,7 @@ win = {
 
         def = this.collectName();
 
-        Deferred.when(def)
+        deferred.when(def)
             .then(function() { callback(null, that.info); });
     },
 
@@ -196,12 +192,12 @@ win = {
         var child,
             that = this;
 
-        
+
         var exec = require('child_process').exec;
 
         child = exec(command, function(error, stdout, stderr) {
             if (error) {
-                //return sys.print('Cannot identify this device.');
+                return console.log('Cannot identify this device.');
             }
 
             callback(stdout);
@@ -210,7 +206,7 @@ win = {
 
     collectName: function() {
         var command = 'wmic os get Caption,CSDVersion /value',
-            def = Deferred(),
+            def = deferred(),
             that = this;
 
         this.run(command, function(text) {
@@ -234,22 +230,22 @@ win = {
 
         return def.promise();
     }
-
 };
 
 platform = os.platform();
 
 module.exports = function(callback) {
-
-    if (platform === 'linux') {
+    switch (platform) {
+      case 'linux':
         linux.collect(callback);
-    } else if (platform === 'darwin') {
+        break;
+      case 'darwin':
         mac.collect(callback);
-    } else if (platform.indexOf('win') === 0) {
+        break;
+      case 'win':
         win.collect(callback);
-    } else {
+        break;
+      default:
         callback(null, 'unknown');
     }
-
-
 }
